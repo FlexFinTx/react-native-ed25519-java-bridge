@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package com.ed25519.bridge;
 
 import java.util.Arrays;
 import java.util.Collections;

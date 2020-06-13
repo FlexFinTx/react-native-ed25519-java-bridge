@@ -66,6 +66,9 @@ repositories {
         // Android JSC is installed from npm
         url "$rootDir/../node_modules/jsc-android/dist"
     }
+    maven {
+        url  "https://dl.bintray.com/terl/lazysodium-maven"
+    }
     google()
     jcenter()
 }
@@ -73,6 +76,9 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
+
+    implementation "com.goterl.lazycode:lazysodium-android:4.1.1@aar"
+    implementation "net.java.dev.jna:jna:5.5.0@aar"
 }
 
 def configureReactNativePom(def pom) {
@@ -82,7 +88,7 @@ def configureReactNativePom(def pom) {
         name packageJson.title
         artifactId packageJson.name
         version = packageJson.version
-        group = "com.reactlibrary"
+        group = "com.ed25519.bridge"
         description packageJson.description
         url packageJson.repository.baseUrl
 
