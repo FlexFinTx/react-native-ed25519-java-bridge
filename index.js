@@ -11,3 +11,25 @@ export async function generateEd25519Keypair() {
     throw e;
   }
 }
+
+export async function sign(privateKeyBase58, message) {
+  try {
+    const signedHex = await Ed25519JavaBridge.sign(privateKeyBase58, message);
+    return signedHex;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function verify(publicKeyBase58, signatureHex, message) {
+  try {
+    const verification = await Ed25519JavaBridge.verify(
+      publicKeyBase58,
+      signatureHex,
+      message
+    );
+    return verification;
+  } catch (e) {
+    throw e;
+  }
+}

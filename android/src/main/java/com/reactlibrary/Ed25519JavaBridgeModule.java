@@ -68,4 +68,30 @@ public class Ed25519JavaBridgeModule extends ReactContextBaseJavaModule {
             promise.reject(e.getMessage());
         }
     }
+
+    @ReactMethod
+    public void verify(String publicKeyBase58, String signatureHex, String message, Promise promise) {
+        try {
+            byte[] publicKeyBytes = Base58.decode(publicKeyBase58);
+            byte[] messageBytes = lazySodium.bytes(message);
+            byte[] signatureBytes = hexStringToByteArray(signatureHex);
+
+            boolean verification = lazySodium.cryptoSignVerifyDetached(signatureBytes, messageBytes, messageBytes.length, publicKeyBytes);
+        
+            promise.resolve(verification);
+        } catch (RuntimeException e) {
+            promise.reject(e.getMessage());
+        }
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len/2];
+
+        for(int i = 0; i < len; i+=2){
+            data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i+1), 16));
+        }
+
+        return data;
+    }
 }
