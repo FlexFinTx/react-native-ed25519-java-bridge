@@ -41,12 +41,30 @@ public class Ed25519JavaBridgeModule extends ReactContextBaseJavaModule {
             Key pk = kp.getPublicKey();
             Key sk = kp.getSecretKey();
 
-            keypair.put("publicKeyHex", pk.getAsHexString());
-            keypair.put("privateKeyHex", sk.getAsHexString());
+            String pkBase58 = Base58.encode(pk.getAsBytes());
+            String skBase58 = Base58.encode(sk.getAsBytes());
+
+            keypair.put("publicKeyBase58", pkBase58);
+            keypair.put("privateKeyBase58", skBase58);
             keypair.put("type", "Ed25519VerificationKey2019");
 
             promise.resolve(keypair.toString());
         } catch (SodiumException | JSONException e) {
+            promise.reject(e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void sign(String privateKeyBase58, String message, Promise promise) {
+        try {
+            byte[] privateKeyBytes = Base58.decode(privateKeyBase58);
+            byte[] messageBytes = lazySodium.bytes(message);
+            byte[] signatureBytes = new byte[Sign.BYTES];
+
+            lazySodium.cryptoSignDetached(signatureBytes, messageBytes, messageBytes.length, privateKeyBytes);
+
+            promise.resolve(lazySodium.toHex(signatureBytes));
+        } catch (RuntimeException e) {
             promise.reject(e.getMessage());
         }
     }
